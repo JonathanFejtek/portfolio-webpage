@@ -6,25 +6,21 @@ export class ParticleSystem{
     }
 
     display(){
+        console.log(canvas.height);
         for(let i = 0; i < this.particles.length; i++){
-            // if(this.particles[i]){
                 this.particles[i].setIterator(this.globalIterator);
                 this.particles[i].computeA();
                 this.particles[i].display();
                 for(let j = i; j < this.particles.length; j++){
                     var distance = p5.dist(this.particles[i].x,this.particles[i].y,this.particles[j].x,this.particles[j].y);
-                    if(distance < 0.09){
+                    if(distance < 0.1){
                         p5.push();
-                        p5.stroke(0,p5.map(distance,0,0.09,5,0)*p5.map((this.particles[i].age),400,0,1,0));
+                        p5.stroke(0,p5.map(distance,0,0.1,5,0)*p5.map((this.particles[i].age),400,0,1,0));
                         p5.line(this.particles[i].x*canvas.width,this.particles[i].y*canvas.height,
                         this.particles[j].x*canvas.width,this.particles[j].y*canvas.height);
                         p5.pop();
                     }
-                }
-            // }
-
-            
-            
+                }           
         }
     }
     
@@ -41,7 +37,7 @@ export class ParticleSystem{
 
     breed(){
         let p = new Particle(Math.random(),1,10);
-        p.setForce(0,-0.001);
+        p.setForce(0,-0.003);
         p.parentSystem = this;
         this.particles.push(p);
     }
@@ -66,7 +62,7 @@ export class Particle{
 
         this.r = r;
         this.initR = r;
-        this.age = 400;
+        this.age = 375;
         this.breedAge = Math.floor(Math.random()*250);
         
         this.breed = Math.random() > 0.90;
@@ -100,11 +96,6 @@ export class Particle{
         this.x+= p5.map(Math.sin(this.freq*(this.iterator-this.phase)),-1,1,-0.0009,0.0009);
         this.y+= this.velY;
         this.age--;
-
-        // if(this.breed && this.breedAge == this.age){
-        //     this.burst();
-        // }
-
 
         if(this.age <= 0){
             if(this.parentSystem){

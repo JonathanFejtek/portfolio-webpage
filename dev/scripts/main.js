@@ -6,24 +6,16 @@ import {ParticleSystem, Particle} from "./particle-system";
 
 let t = new Test(10);
 
-console.log(t);
-
-console.log("BOO");
 
 $(function() {
     $('a').smoothScroll({
-    });
-
-    
-
-    
+    });    
 });
 
-window.onload = function(){
-    new p5(sketch3);
-    new p5(sketch2);
-    new p5(sketch);   
-}
+window.addEventListener("load", function(){
+    new p5(sketch);  
+    console.log("load");
+})
 
 
 const sketch3 = (p5) => {
@@ -37,7 +29,7 @@ const sketch3 = (p5) => {
     p5.setup = () => {
         container = document.getElementById("dynamic-backgroundC");
         let containerWidth = container.getBoundingClientRect().width;
-        let containerHeight = container.getBoundingClientRect().height;   
+        let containerHeight = container.getBoundingClientRect().height/4;   
         canvas = p5.createCanvas(containerWidth,containerHeight);
         canvas.parent('dynamic-backgroundC');
         canvas.id('p5-bg3')
@@ -46,7 +38,7 @@ const sketch3 = (p5) => {
 
         window.addEventListener("resize",function(){
             let containerWidth = container.getBoundingClientRect().width;
-            let containerHeight = container.getBoundingClientRect().height;
+            let containerHeight = container.getBoundingClientRect().height/4;
             p5.resizeCanvas(containerWidth,containerHeight);
         })
 
@@ -56,9 +48,8 @@ const sketch3 = (p5) => {
 
             let cH = container.getBoundingClientRect().height;
             let cW = container.getBoundingClientRect().width;
-            console.log(containerBottom > 0 || containerTop > 0);
             animate = (containerBottom > 0 || containerTop > 0);
-           // iter = window.scrollY/200;
+            //iter = window.scrollY/200;
             if(canvas.height !== cH ){
                 p5.resizeCanvas(cW,cH);
             }
@@ -113,8 +104,6 @@ const sketch3 = (p5) => {
 
 
 
-
-            
             
         iter += 0.01;
         }
@@ -168,7 +157,7 @@ const sketch2 = (p5) => {
             let cH = container.getBoundingClientRect().height;
             let cW = container.getBoundingClientRect().width;
             animate = (containerBottom > 0 || containerTop > 0);
-            iter = window.scrollY/400;
+            //iter = window.scrollY/400;
             if(canvas2.height !== cH ){
                 p5.resizeCanvas(cW,cH);
             }
@@ -205,8 +194,8 @@ const sketch2 = (p5) => {
     
             p5.fill(230, 230, 230);
             p5.stroke(230,230,230);
-            p5.bottom();
-            //iter+= Math.PI/128;
+            //p5.bottom();
+           // iter+= Math.PI/500;
         }
 
     }
@@ -230,11 +219,8 @@ const sketch2 = (p5) => {
 }
 
 const sketch = (p5) => {
-
-    // Variables scoped within p5
     const canvasWidth = p5.windowWidth;
     const canvasHeight = p5.windowHeight;
-    // const d = new Star(500, 300, 4);
     
     let particleSystem = new ParticleSystem(50);
     let T = 0;
@@ -245,22 +231,23 @@ const sketch = (p5) => {
 
     // make library globally available
     window.p5 = p5;
-  
+    window.p5.disableFriendlyErrors = true;
     // Setup function
     // ======================================
     p5.setup = () => {
         let container = document.getElementById("dynamic-background");
         let containerWidth = container.getBoundingClientRect().width;
-        let containerHeight = container.getBoundingClientRect().height;
-      window.canvas = p5.createCanvas(containerWidth, containerHeight);
+        let containerHeight = container.getBoundingClientRect().height/3;
+      window.canvas = p5.createCanvas(containerWidth, containerHeight,p5.P2D);
       window.canvas.parent('dynamic-background');
       window.canvas.id('p5-bg')
-      p5.frameRate(60);
+      //p5.frameRate(60);
       p5.colorMode(p5.HSB,360,100,100);
 
       window.addEventListener("resize",function(){
             let containerWidth = container.getBoundingClientRect().width;
-            let containerHeight = container.getBoundingClientRect().height;
+            let containerHeight = container.getBoundingClientRect().height/3;
+            console.log(containerWidth);
              p5.resizeCanvas(containerWidth,containerHeight);
       })
 
@@ -273,51 +260,47 @@ const sketch = (p5) => {
   
     // Draw function
     // ======================================
-    p5.draw = () => {
-        //p5.background('#111');
-       // p5.ellipse(canvas.width*0.5,canvas.height*0.5,10,10);
-        p5.colorMode(p5.HSB,360,100,100);
+    p5.draw = function() {
         p5.background(250,0.2);
         p5.clear();
+
         if(animate){
-            if(Math.random()>0.85){
+            
+            T+= Math.PI/rate;
+            if(Math.random()>0.9){
                 particleSystem.breed();
             }
-
 
             p5.noStroke();
             for(let i = 0; i < 8; i++){
                 p5.push();
                 p5.fill(210,40,p5.map(i,0,10,255,0),0.2);
-                let w = p5.map(i,0,10,1100,0);
+                let w = p5.map(i,0,10,600,0);
                 p5.ellipse(0.5*canvas.width,1.3*canvas.height,w-20*Math.sin((T/3)-i),w-20*Math.sin((T/3)-i));
                 p5.pop();
             }
-            
-            
+
             particleSystem.display();
             particleSystem.setGlobalIterator(T);
-            T+= Math.PI/rate;
-            
+                       
             p5.stroke('black');
             p5.fill('black');
-            for(let i = 0; i < 1; i+= 1/(canvas.width/15)){
-                let h = p5.map(p5.noise((i+1)*((T+1000)/40)),0,1,1,0.8)*canvas.height;
-                p5.rect(i*canvas.width,h,15,h);
+            for(let i = 0; i < 1; i+= 1/(canvas.width/25)){
+                let h = p5.map(p5.noise((i+1)*((T+1000)/40)),0,1,1,0.5)*canvas.height;
+                p5.rect(i*canvas.width,h,25,h);
             }
+
             p5.noStroke();
             p5.fill(0,0.3);
             for(let i = 0; i < 1; i+= 1/(canvas.width/34)){
-                let h = p5.map(p5.noise((i+1)*((T+1000)/45)),0,1,1,0.75)*canvas.height;
+                let h = p5.map(p5.noise((i+1)*((T+1000)/45)),0,1,1,0.4)*canvas.height;
                 p5.rect(i*canvas.width,h,34,h);
             }
 
-
-            
             p5.noStroke();
             p5.fill(0,0.2);
             for(let i = 0; i < 1; i+= 1/(canvas.width/82)){
-                let h = p5.map(p5.noise((i+1)*((T+1000)/50)),0,1,1,0.7)*canvas.height;
+                let h = p5.map(p5.noise((i+1)*((T+1000)/50)),0,1,1,0.3)*canvas.height;
                 p5.rect(i*canvas.width,h,82,h);
             }
         }
